@@ -1,5 +1,12 @@
 'use strict';
 
+function titleOrName(title, name) {
+  if (title && title.length > 0) {
+    return title;
+  }
+  return name;
+}
+
 class VaultUnlock extends React.Component {
   constructor(props) {
     super(props);
@@ -63,6 +70,77 @@ class VaultItem extends React.Component {
   }
 }
 
+function toClipboard(text) {
+  let area = document.getElementById('copy-area');
+  area.style.display = 'inline';
+  area.value = text;
+  area.focus();
+  area.select();
+
+  try {
+    var successful = document.execCommand('copy');
+    var msg = successful ? 'successful' : 'unsuccessful';
+    console.log('Copying text command was ' + msg);
+  } catch (err) {
+    console.log('Oops, unable to copy');
+  }
+
+  area.style.display = 'none';
+}
+
+class VaultFields extends React.Component {
+  render() {
+    if (! this.props.fields) {
+      return React.createElement('div');
+    }
+
+    let fields = this.props.fields.map(field => {
+      let name = React.createElement('div', {className: 'field-name'}, field.name);
+      let value = React.createElement('div', {className: 'field-value'}, field.value);
+      let copy = React.createElement('button', {className: 'field-copy', onClick: () => toClipboard(field.value)}, 'copy');
+      return React.createElement(React.Fragment, {key: field.name}, name, value, copy);
+    });
+    return React.createElement('div', {id: 'fields'}, fields);
+  }
+}
+
+class VaultSectionFields extends React.Component {
+  render() {
+    if (! this.props.fields) {
+      return React.createElement('div');
+    }
+
+    let fields = this.props.fields.map(field => {
+      let name = React.createElement('div', {className: 'field-name'}, titleOrName(field.title, field.name));
+      let value = React.createElement('div', {className: 'field-value'}, field.value);
+      let copy = React.createElement('button', {className: 'field-copy', onClick: () => toClipboard(field.value)}, 'copy');
+      return React.createElement(React.Fragment, {key: field.name}, name, value, copy);
+    });
+    return React.createElement('div', {className: 'section-fields'}, fields);
+  }
+}
+
+class VaultSection extends React.Component {
+  render() {
+    let title = React.createElement('h4', {}, titleOrName(this.props.title, this.props.name));
+    let fields = React.createElement(VaultSectionFields, {fields: this.props.fields});
+    return React.createElement('div', {}, title, fields);
+  }
+}
+
+class VaultSections extends React.Component {
+  render() {
+    if (! this.props.sections) {
+      return React.createElement('div');
+    }
+
+    let sections = this.props.sections.map(section => {
+      return React.createElement(VaultSection, {...{key: section.name}, ...section});
+    });
+    return React.createElement('div', {id: 'sections'}, sections);
+  }
+}
+
 class VaultDetails extends React.Component {
   constructor(props) {
     super(props);
@@ -71,17 +149,11 @@ class VaultDetails extends React.Component {
   }
 
   render() {
-    let title = React.createElement('h3', {}, this.state.title);
-    let fieldsWrapper = React.createElement('div');
-    if (this.state.fields) {
-      let fields = this.state.fields.map(field => {
-        let name = React.createElement('div', {className: 'field-name'}, field.name);
-        let value = React.createElement('div', {className: 'field-value'}, field.value);
-        return [name, value];
-      });
-      fieldsWrapper = React.createElement('div', {id: 'fields'}, fields);
-    }
-    return React.createElement('div', {'id': 'item-detail'}, title, fieldsWrapper);
+    let title = React.createElement('h2', {}, this.state.title);
+    let fields = React.createElement(VaultFields, {fields: this.state.fields});
+    let notes = React.createElement('div', {}, this.state.notes);
+    let sections = React.createElement(VaultSections, {sections: this.state.sections});
+    return React.createElement('div', {'id': 'item-detail'}, title, fields, sections);
   }
 
   componentDidUpdate() {

@@ -3,6 +3,10 @@ body {
     padding: 0;
 }
 
+#copy-area {
+    display: none;
+}
+
 #react-root {
     display: grid;
     width: 100vw;
@@ -77,9 +81,17 @@ body {
     padding-left: 1em;
 }
 
-#fields {
+#fields, .section-fields {
     display: grid;
     grid-auto-columns: max-content;
+}
+
+#fields {
+    padding-left: 0.5em;
+}
+
+.section-fields {
+    padding-left: 1em;
 }
 
 .field-name {
@@ -93,4 +105,11 @@ body {
 
 .field-value {
     grid-column: 2;
+    margin: auto 0;
+    padding-left: 0.5em;
+}
+
+.field-copy {
+    grid-column: 3;
+    margin-left: 0.5em;
 }

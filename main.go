@@ -35,9 +35,11 @@ type itemsResp struct {
 }
 
 type itemResp struct {
-	Id     string      `json:"id"`
-	Title  string      `json:"title"`
-	Fields []itemField `json:"fields"`
+	Id       string        `json:"id"`
+	Title    string        `json:"title"`
+	Fields   []itemField   `json:"fields"`
+	Notes    string        `json:"notes"`
+	Sections []itemSection `json:"sections"`
 }
 
 type itemField struct {
@@ -45,6 +47,19 @@ type itemField struct {
 	Name        string `json:"name"`
 	Value       string `json:"value"`
 	Designation string `json:"designation"`
+}
+
+type itemSection struct {
+	Name   string             `json:"name"`
+	Title  string             `json:"title"`
+	Fields []itemSectionField `json:"fields"`
+}
+
+type itemSectionField struct {
+	Kind  string `json:"kind"`
+	Name  string `json:"name"`
+	Title string `json:"title"`
+	Value string `json:"value"`
 }
 
 func writeResult(w http.ResponseWriter, statusCode int, obj interface{}) {
@@ -122,7 +137,32 @@ func main() {
 						Designation: string(field.Designation()),
 					})
 				}
-				writeOK(w, itemResp{Id: item.UUID(), Title: item.Title(), Fields: fields})
+
+				var sections []itemSection
+				for _, section := range detail.Sections() {
+					var sectionFields []itemSectionField
+					for _, field := range section.Fields() {
+						sectionFields = append(sectionFields, itemSectionField{
+							Kind:  string(field.Kind()),
+							Name:  field.Name(),
+							Title: field.Title(),
+							Value: field.Value(),
+						})
+					}
+					sections = append(sections, itemSection{
+						Name:   section.Name(),
+						Title:  section.Title(),
+						Fields: sectionFields,
+					})
+				}
+
+				writeOK(w, itemResp{
+					Id:       item.UUID(),
+					Title:    item.Title(),
+					Fields:   fields,
+					Notes:    detail.Notes(),
+					Sections: sections,
+				})
 				return
 			}
 		}
