@@ -18,8 +18,8 @@ class VaultUnlock extends React.Component {
   }
 
   render() {
-    let path = React.createElement('span', {'id': 'header-path'}, this.props.path);
-    let header = React.createElement('div', {'id': 'header'}, path);
+    let path = React.createElement('span', {id: 'header-path'}, this.props.path);
+    let header = React.createElement('div', {id: 'header'}, path);
 
     let pass = React.createElement('input', {
       type: 'password', 
@@ -29,8 +29,8 @@ class VaultUnlock extends React.Component {
     }, null);
     let btn = React.createElement('button', {onClick: this.handleUnlock}, 'Unlock');
     let err = React.createElement('div', null, this.state.error);
-    let form = React.createElement('form', {'id': 'vault-unlock-form'}, pass, btn, err);
-    return React.createElement('div', {'id': 'vault-unlock'}, header, form);
+    let form = React.createElement('form', {id: 'vault-unlock-form'}, pass, btn, err);
+    return React.createElement('div', {id: 'vault-unlock'}, header, form);
   }
 
   handlePasswordChange(event) {
@@ -97,7 +97,7 @@ class VaultFields extends React.Component {
     let fields = this.props.fields.map(field => {
       let displayValue = field.value;
       if (field.type === "P" || field.designation === "password") {
-        displayValue = "********";
+        displayValue = "●●●●●●●●";
       }
 
       let name = React.createElement('div', {className: 'field-name'}, field.name);
@@ -118,7 +118,7 @@ class VaultSectionFields extends React.Component {
     let fields = this.props.fields.map(field => {
       let displayValue = field.value;
       if (field.kind === "concealed") {
-        displayValue = "********";
+        displayValue = "●●●●●●●●";
       }
 
       let name = React.createElement('div', {className: 'field-name'}, titleOrName(field.title, field.name));
@@ -163,7 +163,7 @@ class VaultDetails extends React.Component {
     let fields = React.createElement(VaultFields, {fields: this.state.fields});
     let notes = React.createElement('div', {}, this.state.notes);
     let sections = React.createElement(VaultSections, {sections: this.state.sections});
-    return React.createElement('div', {'id': 'item-detail'}, title, fields, sections);
+    return React.createElement('div', {id: 'item-detail'}, title, fields, sections);
   }
 
   componentDidUpdate() {
@@ -179,17 +179,18 @@ class VaultMain extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { items: [], selected: "" };
+    this.state = { items: [], selected: "", search: "" };
 
     this.handleLock = this.handleLock.bind(this);
+    this.handleSearchChange = this.handleSearchChange.bind(this);
     this.handleSelection = this.handleSelection.bind(this);
   }
 
   render() {
-    let path = React.createElement('span', {'id': 'header-path'}, this.props.path);
-    let locker = React.createElement('button', {'id': 'header-lock', onClick: this.handleLock}, 'Lock');
-    let header = React.createElement('div', {'id': 'header'}, path, locker);
-    let items = React.createElement('ul', {'id': 'item-list'},
+    let path = React.createElement('span', {id: 'header-path'}, this.props.path);
+    let locker = React.createElement('button', {id: 'header-lock', onClick: this.handleLock}, 'Lock');
+    let header = React.createElement('div', {id: 'header'}, path, locker);
+    let items = React.createElement('ul', {id: 'item-list'},
       this.state.items.map(item => React.createElement(VaultItem, {
         key: item.id, 
         id: item.id, 
@@ -198,8 +199,15 @@ class VaultMain extends React.Component {
         handleSelection: this.handleSelection,
       }))
     );
+    let itemSearch = React.createElement('input', {
+      id: 'item-search',
+      placeholder: 'Filter items...',
+      value: this.state.search,
+      onChange: this.handleSearchChange,
+    });
+    let vaultItems = React.createElement('div', { id: 'vault-items'}, itemSearch, items);
     let details = React.createElement(VaultDetails, {id: this.state.selected});
-    return React.createElement('div', {'id': 'vault-main'}, header, items, details);
+    return React.createElement('div', {id: 'vault-main'}, header, vaultItems, details);
   }
 
   componentDidMount() {
@@ -214,6 +222,18 @@ class VaultMain extends React.Component {
       then(data => {
         this.props.locked();
       });
+  }
+
+  handleSearchChange(event) {
+    let search = event.target.value;
+
+    this.setState({search: search});
+
+    fetch('api/items?q=' + search).
+      then(resp => resp.json()).
+      then(state => this.setState({items: state.items || []}));
+
+    event.preventDefault();
   }
 
   handleSelection(itemId) {

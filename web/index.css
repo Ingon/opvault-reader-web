@@ -55,10 +55,19 @@ body {
     grid-template-areas: "h h"
                          "l c";
     grid-template-columns: 20vw 80vw;
+    grid-template-rows: min-content;
+}
+
+#vault-items {
+    grid-area: l;
+}
+
+#item-search {
+    margin-left: 1em;
+    margin-top: 1em;
 }
 
 #item-list {
-    grid-area: l;
     list-style: none;
     padding-left: 1em;
 }

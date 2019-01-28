@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 
 	"github.com/Ingon/opvault"
 )
@@ -107,11 +109,21 @@ func main() {
 		writeOK(w, unlockResp{Path: location, Locked: locked})
 	})
 	http.HandleFunc("/api/items", func(w http.ResponseWriter, req *http.Request) {
+		query := req.URL.Query().Get("q")
+
+		var regex *regexp.Regexp
+		if query != "" {
+			regex = regexp.MustCompile(fmt.Sprintf("(?i).*%s.*", query))
+		}
+
 		opitems, err := profile.Items()
 		check(err)
 
 		var items []itemResp
 		for _, item := range opitems {
+			if regex != nil && !regex.MatchString(item.Title()) {
+				continue
+			}
 			items = append(items, itemResp{Id: item.UUID(), Title: item.Title()})
 		}
 
@@ -174,6 +186,6 @@ func main() {
 
 	// One can use generate_cert.go in crypto/tls to generate cert.pem and key.pem.
 	log.Printf("About to listen on 8443. Go to https://localhost:8443/")
-	err = http.ListenAndServeTLS(":8443", "./conf/cert.pem", "./conf/key.pem", nil)
+	err = http.ListenAndServeTLS("localhost:8443", "./conf/cert.pem", "./conf/key.pem", nil)
 	log.Fatal(err)
 }
