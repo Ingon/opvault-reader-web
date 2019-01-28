@@ -95,8 +95,13 @@ class VaultFields extends React.Component {
     }
 
     let fields = this.props.fields.map(field => {
+      let displayValue = field.value;
+      if (field.type === "P" || field.designation === "password") {
+        displayValue = "********";
+      }
+
       let name = React.createElement('div', {className: 'field-name'}, field.name);
-      let value = React.createElement('div', {className: 'field-value'}, field.value);
+      let value = React.createElement('div', {className: 'field-value'}, displayValue);
       let copy = React.createElement('button', {className: 'field-copy', onClick: () => toClipboard(field.value)}, 'copy');
       return React.createElement(React.Fragment, {key: field.name}, name, value, copy);
     });
@@ -111,8 +116,13 @@ class VaultSectionFields extends React.Component {
     }
 
     let fields = this.props.fields.map(field => {
+      let displayValue = field.value;
+      if (field.kind === "concealed") {
+        displayValue = "********";
+      }
+
       let name = React.createElement('div', {className: 'field-name'}, titleOrName(field.title, field.name));
-      let value = React.createElement('div', {className: 'field-value'}, field.value);
+      let value = React.createElement('div', {className: 'field-value'}, displayValue);
       let copy = React.createElement('button', {className: 'field-copy', onClick: () => toClipboard(field.value)}, 'copy');
       return React.createElement(React.Fragment, {key: field.name}, name, value, copy);
     });

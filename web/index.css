@@ -105,11 +105,10 @@ body {
 
 .field-value {
     grid-column: 2;
-    margin: auto 0;
-    padding-left: 0.5em;
+    margin: auto 0.5em;
 }
 
 .field-copy {
     grid-column: 3;
-    margin-left: 0.5em;
+    margin: auto 0.5em;
 }
