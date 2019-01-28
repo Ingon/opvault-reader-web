@@ -35,8 +35,16 @@ type itemsResp struct {
 }
 
 type itemResp struct {
-	Id    string `json:"id"`
-	Title string `json:"title"`
+	Id     string      `json:"id"`
+	Title  string      `json:"title"`
+	Fields []itemField `json:"fields"`
+}
+
+type itemField struct {
+	Type        string `json:"type"`
+	Name        string `json:"name"`
+	Value       string `json:"value"`
+	Designation string `json:"designation"`
 }
 
 func writeResult(w http.ResponseWriter, statusCode int, obj interface{}) {
@@ -89,10 +97,37 @@ func main() {
 
 		var items []itemResp
 		for _, item := range opitems {
-			items = append(items, itemResp{Id: item.Title(), Title: item.Title()})
+			items = append(items, itemResp{Id: item.UUID(), Title: item.Title()})
 		}
 
 		writeOK(w, itemsResp{items})
+	})
+	http.HandleFunc("/api/item", func(w http.ResponseWriter, req *http.Request) {
+		uuid := req.URL.Query().Get("id")
+
+		opitems, err := profile.Items()
+		check(err)
+
+		for _, item := range opitems {
+			if item.UUID() == uuid {
+				detail, err := item.Detail()
+				check(err)
+
+				var fields []itemField
+				for _, field := range detail.Fields() {
+					fields = append(fields, itemField{
+						Type:        string(field.Type()),
+						Name:        field.Name(),
+						Value:       field.Value(),
+						Designation: string(field.Designation()),
+					})
+				}
+				writeOK(w, itemResp{Id: item.UUID(), Title: item.Title(), Fields: fields})
+				return
+			}
+		}
+
+		w.WriteHeader(http.StatusNotFound)
 	})
 
 	http.Handle("/", http.FileServer(http.Dir("./web")))

@@ -1,0 +1,96 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#react-root {
+    display: grid;
+    width: 100vw;
+    height: 100vh;
+}
+
+#loading {
+    margin: auto;
+}
+
+#header {
+    background-color: #121212;
+    padding: 0.5em;
+
+    grid-area: h;
+
+    display: grid;
+}
+
+#header-path {
+    grid-column: 1;
+    color: white;
+    margin: auto;
+}
+
+#header-lock {
+    grid-column: 6;
+}
+
+#vault-unlock {
+    display: grid;
+    grid-template-areas: "h h h"
+                         ". . ."
+                         ". c ."
+                         ". . .";
+    grid-template-rows: min-content;
+}
+
+#vault-unlock-form {
+    grid-area: c;
+    margin: auto;
+}
+
+#vault-main {
+    display: grid;
+    grid-template-areas: "h h"
+                         "l c";
+    grid-template-columns: 20vw 80vw;
+}
+
+#item-list {
+    grid-area: l;
+    list-style: none;
+    padding-left: 1em;
+}
+
+.item, .item-selected {
+    padding: 0.1em;
+}
+
+.item {
+    cursor: pointer;
+}
+
+.item-selected {
+    background: lightgray;
+    cursor: default;
+}
+
+#item-detail {
+    grid-area: c;
+    padding-left: 1em;
+}
+
+#fields {
+    display: grid;
+    grid-auto-columns: max-content;
+}
+
+.field-name {
+    font-weight: bold;
+    grid-column: 1;
+}
+
+.field-name:after {
+    content: ": "
+}
+
+.field-value {
+    grid-column: 2;
+}
