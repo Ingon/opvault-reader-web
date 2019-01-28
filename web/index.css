@@ -106,6 +106,7 @@ body {
 .field-name {
     font-weight: bold;
     grid-column: 1;
+    margin: auto 0;
 }
 
 .field-name:after {

@@ -88,6 +88,20 @@ function toClipboard(text) {
   area.style.display = 'none';
 }
 
+class VaultField extends React.Component {
+  render() {
+    let displayValue = this.props.value;
+    if (this.props.type === "P" || this.props.designation === "password" || this.props.kind === "concealed") {
+      displayValue = "●●●●●●●●";
+    }
+
+    let name = React.createElement('div', {className: 'field-name'}, this.props.name);
+    let value = React.createElement('div', {className: 'field-value'}, displayValue);
+    let copy = React.createElement('button', {className: 'field-copy', onClick: () => toClipboard(this.props.value)}, 'copy');
+    return React.createElement(React.Fragment, {}, name, value, copy);
+  }
+}
+
 class VaultFields extends React.Component {
   render() {
     if (! this.props.fields) {
@@ -95,15 +109,7 @@ class VaultFields extends React.Component {
     }
 
     let fields = this.props.fields.map(field => {
-      let displayValue = field.value;
-      if (field.type === "P" || field.designation === "password") {
-        displayValue = "●●●●●●●●";
-      }
-
-      let name = React.createElement('div', {className: 'field-name'}, field.name);
-      let value = React.createElement('div', {className: 'field-value'}, displayValue);
-      let copy = React.createElement('button', {className: 'field-copy', onClick: () => toClipboard(field.value)}, 'copy');
-      return React.createElement(React.Fragment, {key: field.name}, name, value, copy);
+      return React.createElement(VaultField, {...{key: field.name}, ...field});
     });
     return React.createElement('div', {id: 'fields'}, fields);
   }
@@ -116,15 +122,7 @@ class VaultSectionFields extends React.Component {
     }
 
     let fields = this.props.fields.map(field => {
-      let displayValue = field.value;
-      if (field.kind === "concealed") {
-        displayValue = "●●●●●●●●";
-      }
-
-      let name = React.createElement('div', {className: 'field-name'}, titleOrName(field.title, field.name));
-      let value = React.createElement('div', {className: 'field-value'}, displayValue);
-      let copy = React.createElement('button', {className: 'field-copy', onClick: () => toClipboard(field.value)}, 'copy');
-      return React.createElement(React.Fragment, {key: field.name}, name, value, copy);
+      return React.createElement(VaultField, {...{key: field.name}, ...field});
     });
     return React.createElement('div', {className: 'section-fields'}, fields);
   }
