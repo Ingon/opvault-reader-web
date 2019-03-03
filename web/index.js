@@ -215,6 +215,7 @@ class VaultMain extends React.Component {
   }
   
   handleLock(event) {
+    toClipboard(' ');
     fetch('api/lock').
       then(resp => resp.json()).
       then(data => {
